@@ -1,0 +1,228 @@
+
+## Module 1: Exercises
+
+### Question 1a:
+I am trying to use R as a calculator, to convert my height in feet (6 foot 1 inch) into cm. I thought I had the formulae correct, but I am pretty sure I am not 8.5cm tall. Can you spot my mistake and update the code?
+```{r ex1}
+6 + 1/12 * 30.48
+```
+
+
+#### Solution
+
+```{r sol1}
+(6+1/12) * 30.48
+```
+*Brackets are important, and need to be used correctly! Not everything that is a mistake will trigger an error message.*
+
+### Question 1b:
+
+```{r setup}
+library(datasets)
+data("airquality")
+```
+
+Using the `airquality` dataset I wanted to calculate the mean value of the wind speed, but
+I am seeing an error message from my code. Can you find and fix my error?
+
+```{r ex1b}
+mean(airquality$wind)
+```
+#### Solution
+
+```{r sol2}
+mean(airquality$Wind)
+```
+*Again - only a warning rather than an error message. In this instance because R is case sensitive. There is a column called `Wind` in the data, but there is no column called `wind`.*
+
+
+### Question 1c:
+Using the `airquality` dataset I wanted to create a column in my data with the temperature converted from Farenheit to Kelvin (because I am a proper scientist who uses Kelvin!) but I am seeing an error. The conversion formula is $K=\frac{5}{9}(F-32)+273.15$. Can you find and fix my error?
+
+```{r ex1c}
+airquality$temp-Kelvin<-(5/9)*(airquatily$Temp-32)) + 273.15 
+```
+
+#### Solution
+
+```{r ex1c1}
+airquality$Temp_Kelvin<-(5/9)*(airquality$Temp-32) + 273.15 
+```
+
+*This time you will see error messages. In fact, a lot of error messages, since I tried to pack in a lot of errors into a short line of code.*
+
+*Following the trail of error messages here will help; although visually you may be able to spot some of the issues without running the code.*
+
+Error 1: `Error: unexpected ')' in "airquality$temp-Kelvin<-(5/9)*(airquatily$Temp-32))"`
+
+*This is indicating that a close bracket ')' was not expected. I.e. there are more brackets being closed (3) than have been opened (2). At the very end of the line only one bracket needs to be closed, so delete the final close bracket sign.*
+
+`airquality$temp-Kelvin<-(5/9)*(airquatily$Temp-32) + 273.15` 
+
+Error 2: `Error: object 'airquatily' not found`
+
+*I made a spelling mistake the second time I called the data - `airquatily` is not correct. `airquality` is. So replace this.*
+
+`airquality$temp-Kelvin<-(5/9)*(airquality$Temp-32) + 273.15` 
+
+Error 3: `Error in airquality$temp - Kelvin <- (5/9) * (airquality$Temp - 32) +  :  could not find function "-<-"` 
+
+
+*This time the error is perhaps not so easy to interpret*.
+
+The issue comes from the name I am giving to my new column `temp-Kelvin`. Remember the naming rules for objects in R - the `-` character is protected in R and cannot be used in names of objects, because it will be interpreted as part of a command rather than part of a name. So we should call the column only using alphanumeric characters, or "_" and "." as the only allowable punctuation.
+
+`airquality$temp_Kelvin<-(5/9)*(airquality$Temp-32) + 273.15`
+
+*Not errors but good practice:*
+
+*At this point the code is free of mistakes; but there are a couple of extra things that you probably should do as part of good coding practice.*
+
+*Firstly - check the output! Remember that when you create objects you do not see any output when you run the code. So it is a good idea to ask R to show you the new column, or the dataset with the column included, so you can check the calculation is being done correctly.*
+
+*Secondly - The original column is called `Temp` and the new column is called `temp_Kelvin`. The mixing of cases is not a problem - you can choose whatever names you like - but it is potentially a source of confusion and annoyance further down the line. If you make spelling or case inconsistencies when you first introduce something then you have to commit to remembering to be consistent with that inconsitency as you keep working with the code. Perhaps better at the start to go with an upper case `T` in the name.*
+
+### Question 2
+
+This question will use the same earthquakes dataset from the quiz, showing the magnitude of earthquakes occuring in the ocean around Fiji since 1964, as well as the number of different stations reporting the earthquake. This has been loaded into the R sessions as a data frame called `quakes` 
+
+### Question 2a
+Write a command to determine the largest magnitude (`mag`) earthquake recorded?
+
+#### Solution
+
+*I would need to use the `max` command, and then specify that i want to use the `mag` column within the `quakes` dataset by using the data frame name `quakes` followed by a `$` follwed by the column name `mag`*
+
+```{r sol2a}
+max(quakes$mag)
+```
+
+
+
+### Question 2b
+Write a command to determine the smallest depth (`depth`) below surface that an earthquake was recorded?
+
+#### Solution
+
+*I would need to use the `min` command, and then specify that i want to use the `depth` column within the `quakes` dataset by using the data frame name `quakes` followed by a `$` follwed by the column name `depth`*
+
+```{r sol2b}
+min(quakes$mag)
+```
+
+
+### Question 2c
+I would like to obtain the standard error of the earthquake magnitude column from the `quakes` dataset. The formula for standard error for a variable `x` is $se(x)=\frac{sd(x)}{\sqrt{n}}$ where sd is the standard deviation and n is the number of observations.
+Base R does not have a built in standard error function - but write some code to calculate the standard error for the `mag` variable.
+#### Solution
+
+*The functions I need will be `sd` to obtain the standard deviation, `length` to obtain the number of observations, and `sqrt` to obtain the square root.*
+*Putting it all together into the standard error formula would then give me:*
+
+```{r sol2c}
+sd(quakes$mag)/sqrt(length(quakes$mag))
+```
+*Notw that this time I do need to close 2 brackets at the end of my code because the `length` function has been nested inside the `sqrt` function.*
+
+*You could also do this by assigning objects to the results of sd and length which may make the code look a little cleaner. Either alternative is fine here!*
+
+```{r sol2cvariant}
+sd_x<-sd(quakes$mag)
+n_x<-length(quakes$mag)
+sd_x/sqrt(n_x)
+```
+
+
+### Question 3
+I am again using the `airquality` data and I am now interested in looking at the `Solar.R` variable. I know that there can sometimes be very extreme outlying values for this variable, so rather than looking at the minimum and maximum I would instead like to look at the 5th percentile and the 95th percentile. Find these two values using the `quantile` function.
+
+#### Solution
+
+*There are a few tricks to notice here - firstly when you look at the Solar.R variable, make sure you notice that there are missing values*
+```{r sol3}
+airquality$Solar.R
+```
+
+*So when we use the quantile function we obtain an error*
+```{r sol4}
+quantile(airquality$Solar.R)
+```
+*So we need to use the option `na.rm=TRUE`*
+
+```{r sol5}
+quantile(airquality$Solar.R,na.rm=T)
+```
+
+*The default output is also not what we want - the question is asking for the 5th percentile and the 95th percentile. we need to use the probs option to set the quantile. we could write this once for each percentile like this. Note that we need to specifiy the percentage as a decimal - i.e. 5%=0.05:*
+
+```{r sol6}
+quantile(airquality$Solar.R,na.rm=T,probs=0.05)
+quantile(airquality$Solar.R,na.rm=T,probs=0.95)
+```
+
+*But a better way would be to use the c() function to combine 0.05 and 0.95 and ask for the two percentiles within one line*
+
+```{r sol7}
+quantile(airquality$Solar.R,na.rm=T,probs=c(0.05,0.95))
+```
+
+
+
+### Question 4:
+A task I am sure most of you remember from school is being asked to solve a quadratic equation using the formula $x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$.
+
+Write some R code to find the two values of x when $x^2-9x+19=0$ . Assign `a`, `b` and `c` to be objects so that you could easily update your code to solve any quadratic formula.
+
+(As a reminder, in the quadratic equation formula from this particular example `a` would be 1; `b` would be -9 and `c` would be 19)
+
+#### Solution
+
+*I am going to write this in general terms so that if i wanted to change my code for a different formula later, then i could. However, I didn't explicitly ask you to do that, so if you directly plugged in 1, -9 and 19 into a formula this would still be fine.*
+
+*The main trick here for writing the code efficiently is to use the `c()` function to replace the $\pm$ operator as this is equivalent to saying "plus one times" or "minus one times", so we can provide a vector of `-1` and `1` to the code we write so that we only have to write one line for the main part of the solution. Alternatively you could write out seperate lines of code for "plus" and "minus", and combine later.*
+
+*Brackets are incredibly easy to get wrong on this one. Be extremely careful working out where to place them! My solution below has the minimum number of brackets necessary (due to BODMAS rules), but there is no harm in including extra brackets, just to be safe, if you want to ensure that the order of operations acts as you expect.*
+
+*As with question 3 - make sure to write `4*a*c` to multiply these together; R would not be able to interpret `4ac`.*
+*However R can interpret `-b` providing b is a number. But if you wrote `-1*b` that would also be perfectly correct.*
+
+```{r quad1}
+a<-1
+b<--9
+c<-19
+x<-(-b+c(1,-1)*sqrt(b^2-4*a*c))/(2*a)
+x
+```
+
+*Or the alternate longer route*
+
+```{r quad2}
+a<-1
+b<--9
+c<-19
+x_plus<-(-b+sqrt(b^2-4*a*c))/(2*a)
+x_minus<-(-b-sqrt(b^2-4*a*c))/(2*a)
+x<-c(x_plus,x_minus)
+x
+```
+
+*As i'm sure you learnt at school - it's always good practice to plug these numbers back into the equation to see if it makes sense! Saving my object as x in the previous step makes this easy.*
+
+```{r quad3}
+x^2 -(9*x) +19
+```
+*You will see here that you don't actually get a zero for the first number. Unfortunately R will sometimes come up with rounding errors. Remember in scientific notation that "3.552714e-15" is equal to "0.00000000000000355".So i think i am happy to conclude that I got my formula correct!*
+
+
+```{r}
+install.packages("ggplot2")
+```
+```{r}
+library(ggplot2)
+
+ggplot(data=airquality,aes(y=Temp,x=Solar.R))+
+  geom_point()
+```
+
+
+
